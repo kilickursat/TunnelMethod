@@ -4,11 +4,15 @@ import matplotlib.pyplot as plt
 import joblib
 import builtins
 
-# Custom hash function for unhashable types
-def hash_bytearray(obj):
-    return hash(repr(obj))
+# Custom hash function for dict objects
+def hash_dict(obj):
+    try:
+        return hash(frozenset(obj.items()))
+    except TypeError:
+        # For unhashable values, hash their string representation
+        return hash(frozenset((k, repr(v)) for k, v in obj.items()))
 
-@st.cache(hash_funcs={builtins.bytearray: hash_bytearray})
+@st.cache(hash_funcs={builtins.dict: hash_dict})
 def load_model():
     model, label_encoder = joblib.load('tunneling_xgboost_model.pkl')
     return model, label_encoder
