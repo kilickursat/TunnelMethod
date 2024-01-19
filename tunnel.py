@@ -1,20 +1,51 @@
-# app.py
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import joblib
 
+# Set page config
+st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
+
+# Custom color scheme
+primaryColor = "#E694FF"
+backgroundColor = "#f0f2f6"
+secondaryBackgroundColor = "#e8eaf6"
+textColor = "#262730"
+font = "sans serif"
+
+# Custom styles
+st.markdown(
+    f"""
+    <style>
+    .reportview-container {{
+        font-family: {font};
+        background-color: {backgroundColor};
+    }}
+    .sidebar .sidebar-content {{
+        background-color: {secondaryBackgroundColor};
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Load the model and the label encoder
+@st.cache
+def load_model():
+    model, label_encoder = joblib.load('tunneling_xgboost_model.pkl')
+    return model, label_encoder
+
+model, label_encoder = load_model()
+
+# Main app function
 def main():
-    st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
-    
+    st.sidebar.title("Navigation")
     pages = {
         "Information": page_information,
-        "Analysis": page_analysis
+        "Analysis": page_analysis,
+        "About": page_about
     }
-
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Select a Page", list(pages.keys()))
-
+    page = st.sidebar.radio("Select a Page", list(pages.keys()), format_func=lambda x: x + " 📄")
     pages[page]()
 
 def page_information():
@@ -23,24 +54,22 @@ def page_information():
 
 def page_analysis():
     st.title("Interactive Rock Mass Analysis")
-    st.sidebar.header("Adjust Parameters")
-    
-    rmr = st.sidebar.slider("Rock Mass Rating (RMR)", 0, 100, 50)
-    rqd = st.sidebar.slider("Rock Quality Designation (RQD) %", 0, 100, 75)
-    gsi = st.sidebar.slider("Geological Strength Index (GSI)", 0, 100, 65)
-    ucs = st.sidebar.slider("Unconfined Compressive Strength (UCS) MPa", 0, 200, 100)
-    bts = st.sidebar.slider("Brazilian Tensile Strength (BTS) MPa", 0, 50, 25)
+    with st.sidebar:
+        st.header("Adjust Parameters")
+        rmr = st.slider("Rock Mass Rating (RMR)", 0, 100, 50, help="Adjust the RMR value")
+        rqd = st.slider("Rock Quality Designation (RQD) %", 0, 100, 75, help="Adjust the RQD percentage")
+        gsi = st.slider("Geological Strength Index (GSI)", 0, 100, 65, help="Adjust the GSI value")
+        ucs = st.slider("Unconfined Compressive Strength (UCS) MPa", 0, 200, 100, help="Adjust the UCS value in MPa")
+        bts = st.slider("Brazilian Tensile Strength (BTS) MPa", 0, 50, 25, help="Adjust the BTS value in MPa")
 
-    # Load the model and the label encoder
-    model, label_encoder = joblib.load('tunneling_xgboost_model.pkl')
-
-    input_features = np.array([[rmr, rqd, gsi, ucs, bts]])
-    prediction_encoded = model.predict(input_features)
-    recommendation = label_encoder.inverse_transform(prediction_encoded)  # Decode prediction
-    st.write(f"Recommended Tunneling Method: {recommendation[0]}")
-
-    fig = generate_stress_visualization(rmr, rqd, gsi, ucs, bts)
-    st.pyplot(fig)
+    # Prediction and visualization
+    if st.sidebar.button("Analyze"):
+        with st.spinner('Analyzing...'):
+            prediction_encoded = model.predict(np.array([[rmr, rqd, gsi, ucs, bts]]))
+            recommendation = label_encoder.inverse_transform(prediction_encoded)
+            st.write(f"Recommended Tunneling Method: {recommendation[0]}")
+            fig = generate_stress_visualization(rmr, rqd, gsi, ucs, bts)
+            st.pyplot(fig)
 
 def generate_stress_visualization(rmr, rqd, gsi, ucs, bts):
     x = np.linspace(0, 10, 100)
@@ -52,6 +81,10 @@ def generate_stress_visualization(rmr, rqd, gsi, ucs, bts):
     plt.ylabel('Stress (MPa)')
     plt.legend()
     return plt
+
+def page_about():
+    st.title("About this App")
+    st.write("This app provides a comprehensive analysis of rock mass classifications using advanced machine learning techniques.")
 
 if __name__ == "__main__":
     main()
