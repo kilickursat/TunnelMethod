@@ -1,4 +1,3 @@
-
 # app.py
 import streamlit as st
 import numpy as np
@@ -32,10 +31,12 @@ def page_analysis():
     ucs = st.sidebar.slider("Unconfined Compressive Strength (UCS) MPa", 0, 200, 100)
     bts = st.sidebar.slider("Brazilian Tensile Strength (BTS) MPa", 0, 50, 25)
 
-    model = joblib.load('tunneling_xgboost_model.pkl')
+    # Load the model and the label encoder
+    model, label_encoder = joblib.load('tunneling_xgboost_model.pkl')
 
     input_features = np.array([[rmr, rqd, gsi, ucs, bts]])
-    recommendation = model.predict(input_features)
+    prediction_encoded = model.predict(input_features)
+    recommendation = label_encoder.inverse_transform(prediction_encoded)  # Decode prediction
     st.write(f"Recommended Tunneling Method: {recommendation[0]}")
 
     fig = generate_stress_visualization(rmr, rqd, gsi, ucs, bts)
