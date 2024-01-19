@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import joblib
 import builtins
-# Set page config
-st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
+
+
 # Custom hash function for dict objects
 def hash_dict(obj):
     try:
@@ -20,25 +20,24 @@ def load_model():
 
 model, label_encoder = load_model()
 
-
-
-# Custom color scheme
-primaryColor = "#E694FF"
-backgroundColor = "#f0f2f6"
-secondaryBackgroundColor = "#e8eaf6"
-textColor = "#262730"
-font = "sans serif"
+# Set page config
+st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
 
 # Custom styles
 st.markdown(
     f"""
     <style>
-    .reportview-container {{
-        font-family: {font};
-        background-color: {backgroundColor};
+    .reportview-container .main .block-container{{
+        padding-top: 2rem;
     }}
     .sidebar .sidebar-content {{
-        background-color: {secondaryBackgroundColor};
+        background-color: white;
+    }}
+    .creator-name {{
+        font-size: 20px;
+        font-style: italic;
+        text-align: center;
+        margin-top: 20px;
     }}
     </style>
     """,
@@ -58,7 +57,10 @@ def main():
 
 def page_information():
     st.title("Rock Mass Classification - Information")
-    st.write("Detailed information about RMR, RQD, GSI, in-situ stress, hydrogeology, UCS, and BTS.")
+    st.image("path_to_your_image.jpg", width=700)  # Add your image path
+    st.markdown("### Features Description")
+    st.write("Detailed information about the features of this application...")
+    st.markdown('<p class="creator-name">Created by Kursat Kilic</p>', unsafe_allow_html=True)
 
 def page_analysis():
     st.title("Interactive Rock Mass Analysis")
@@ -70,13 +72,14 @@ def page_analysis():
         ucs = st.slider("Unconfined Compressive Strength (UCS) MPa", 0, 200, 100, help="Adjust the UCS value in MPa")
         bts = st.slider("Brazilian Tensile Strength (BTS) MPa", 0, 50, 25, help="Adjust the BTS value in MPa")
 
-    # Prediction and visualization
     if st.sidebar.button("Analyze"):
         with st.spinner('Analyzing...'):
             prediction_encoded = model.predict(np.array([[rmr, rqd, gsi, ucs, bts]]))
             recommendation = label_encoder.inverse_transform(prediction_encoded)
-            st.write(f"Recommended Tunneling Method: {recommendation[0]}")
-            fig = generate_stress_visualization(rmr, rqd, gsi, ucs, bts)
+            st.markdown(f"<h1 style='text-align: center; font-size: 40px;'><b>{recommendation[0]}</b></h1>", unsafe_allow_html=True)
+            fig, ax = plt.subplots()
+            # Add interactive 2D scene logic here
+            # Example: ax.plot(sample_data_x, sample_data_y)
             st.pyplot(fig)
 
 def generate_stress_visualization(rmr, rqd, gsi, ucs, bts):
