@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import joblib
 import builtins
+from PIL import Image
 
 # Set page config
 st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
@@ -57,7 +58,10 @@ def main():
 
 def page_information():
     st.title("Rock Mass Classification - Information")
-    st.image("A_cutting_edge_technology_tunnel_boring_machine_and_rock_mechanics__Style-_Anime_style-Line_Art_seed-0ts-1705662387_idx-0.jpg", width=700)# Add your image path
+    # Set page layout to 'wide'
+
+    # Page image and markdowns
+    image = Image.open('A_cutting_edge_technology_tunnel_boring_machine_and_rock_mechanics__Style-_Anime_style-Line_Art_seed-0ts-1705662387_idx-0.png')
     st.markdown("### Features Description")
     st.write("Detailed information about the features of this application...")
     st.markdown('<p class="creator-name">Created by Kursat Kilic</p>', unsafe_allow_html=True)
