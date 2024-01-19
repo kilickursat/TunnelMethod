@@ -13,7 +13,7 @@ def hash_dict(obj):
         # For unhashable values, hash their string representation
         return hash(frozenset((k, repr(v)) for k, v in obj.items()))
 
-@st.cache(hash_funcs={builtins.dict: hash_dict})
+@st.cache_data(hash_funcs={builtins.dict: hash_dict})
 def load_model():
     model, label_encoder = joblib.load('tunneling_xgboost_model.pkl')
     return model, label_encoder
