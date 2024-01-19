@@ -57,7 +57,8 @@ def main():
 
 def page_information():
     st.title("Rock Mass Classification - Information")
-    st.image("path_to_your_image.jpg", width=700)  # Add your image path
+    st.image("st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
+", width=700)  # Add your image path
     st.markdown("### Features Description")
     st.write("Detailed information about the features of this application...")
     st.markdown('<p class="creator-name">Created by Kursat Kilic</p>', unsafe_allow_html=True)
