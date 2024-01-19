@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import joblib
 import builtins
 
+# Set page config
+st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
 
 # Custom hash function for dict objects
 def hash_dict(obj):
@@ -20,8 +22,6 @@ def load_model():
 
 model, label_encoder = load_model()
 
-# Set page config
-st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
 
 # Custom styles
 st.markdown(
