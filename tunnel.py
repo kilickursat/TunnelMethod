@@ -2,6 +2,18 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import joblib
+import builtins
+
+# Custom hash function for unhashable types
+def hash_bytearray(obj):
+    return hash(repr(obj))
+
+@st.cache(hash_funcs={builtins.bytearray: hash_bytearray})
+def load_model():
+    model, label_encoder = joblib.load('tunneling_xgboost_model.pkl')
+    return model, label_encoder
+
+model, label_encoder = load_model()
 
 # Set page config
 st.set_page_config(page_title="Rock Mass Classification Analysis", layout="wide")
@@ -28,14 +40,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-# Load the model and the label encoder
-@st.cache
-def load_model():
-    model, label_encoder = joblib.load('tunneling_xgboost_model.pkl')
-    return model, label_encoder
-
-model, label_encoder = load_model()
 
 # Main app function
 def main():
